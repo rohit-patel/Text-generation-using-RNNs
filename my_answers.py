@@ -1,46 +1,32 @@
 import numpy as np
-
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Activation
 from keras.layers import LSTM
 import keras
 
-
-# TODO: fill out the function below that transforms the input series 
-# and window-size into a set of input/output pairs for use with our RNN model
 def window_transform_series(series, window_size):
-    # containers for input/output pairs
-    X = []
-    y = []
-
-    # reshape each 
-    X = np.asarray(X)
-    X.shape = (np.shape(X)[0:2])
-    y = np.asarray(y)
-    y.shape = (len(y),1)
-
+    X = np.concatenate([[series[i:i+window_size] for i in range(len(series)-window_size)]])
+    y = np.reshape(series[window_size:],(-1,1))
     return X,y
 
-# TODO: build an RNN to perform regression on our time series input/output data
 def build_part1_RNN(window_size):
-    pass
+    mod1 = Sequential()
+    mod1.add(LSTM(units = 5, input_shape =(window_size,1),return_sequences=True ))
+    mod1.add(LSTM(units = 1,return_sequences=False))
+    return mod1
 
-
-### TODO: return the text input with only ascii lowercase and the punctuation given below included.
 def cleaned_text(text):
-    punctuation = ['!', ',', '.', ':', ';', '?']
+    # punctuation = ['!', ',', '.', ':', ';', '?']
+    import re
+    return re.sub(' +', ' ', re.sub('(?![a-z!,.:;?]).+?',' ',text))
 
-    return text
-
-### TODO: fill out the function below that transforms the input text and window-size into a set of input/output pairs for use with our RNN model
 def window_transform_text(text, window_size, step_size):
-    # containers for input/output pairs
-    inputs = []
-    outputs = []
+    inputs, outputs = zip(*[(text[i:i+window_size],text[i+window_size] ) for i in range(0,len(text)-window_size,step_size)])
+    return list(inputs),list(outputs)
 
-    return inputs,outputs
-
-# TODO build the required RNN model: 
-# a single LSTM hidden layer with softmax activation, categorical_crossentropy loss 
 def build_part2_RNN(window_size, num_chars):
-    pass
+    mod1 = Sequential()
+    mod1.add(LSTM(units = 200, input_shape =(window_size,num_chars),return_sequences=True ))
+    mod1.add(LSTM(units = num_chars,return_sequences=False))
+    mod1.add(Activation('softmax'))
+    return mod1
