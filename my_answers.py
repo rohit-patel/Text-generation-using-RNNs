@@ -26,7 +26,7 @@ def window_transform_text(text, window_size, step_size):
 
 def build_part2_RNN(window_size, num_chars):
     mod1 = Sequential()
-    mod1.add(LSTM(units = 21, input_shape =(window_size,num_chars),return_sequences=True ))
-    mod1.add(LSTM(units = num_chars,return_sequences=False))
-    mod1.add(Dense(1, activation='softmax'))
+    mod1.add(LSTM(units = 200, input_shape =(window_size,num_chars),return_sequences=False ))
+    mod1.add(Dense(num_chars))
+    mod1.add(Activation("softmax"))
     return mod1
